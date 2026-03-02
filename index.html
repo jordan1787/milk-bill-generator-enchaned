@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Milk Bill Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<body style="font-family: Arial; padding: 30px; background: linear-gradient(to right, #d4fc79, #96e6a1);">
+
+<div style="background:white; padding:25px; border-radius:10px; max-width:500px; margin:auto; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
+
+<h2 style="text-align:center; color:#2e7d32;">🌿 Milk Bill Generator</h2>
+
+<label>Customer Name:</label><br>
+<input type="text" id="name" style="width:100%; padding:8px;"><br><br>
+
+<label>Address:</label><br>
+<input type="text" id="address" style="width:100%; padding:8px;"><br><br>
+
+<label>Start Date:</label><br>
+<input type="date" id="startDate" style="width:100%; padding:8px;"><br><br>
+
+<label>End Date:</label><br>
+<input type="date" id="endDate" style="width:100%; padding:8px;"><br><br>
+
+<label>Days Missed:</label><br>
+<input type="number" id="missedDays" value="0" style="width:100%; padding:8px;"><br><br>
+
+<label>Milk Quantity per Day (Litres):</label><br>
+<input type="number" id="quantity" style="width:100%; padding:8px;"><br><br>
+
+<label>Price per Litre:</label><br>
+<input type="number" id="price" style="width:100%; padding:8px;"><br><br>
+
+<button onclick="generatePDF()" style="width:100%; padding:10px; background:#2e7d32; color:white; border:none; border-radius:5px; font-size:16px;">
+Generate PDF
+</button>
+
+</div>
+
+<script>
+async function generatePDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    let name = document.getElementById("name").value;
+    let address = document.getElementById("address").value;
+    let startDate = new Date(document.getElementById("startDate").value);
+    let endDate = new Date(document.getElementById("endDate").value);
+    let missedDays = parseInt(document.getElementById("missedDays").value) || 0;
+    let quantity = parseFloat(document.getElementById("quantity").value);
+    let price = parseFloat(document.getElementById("price").value);
+
+    let totalDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+    let billableDays = totalDays - missedDays;
+    let totalMilk = billableDays * quantity;
+    let totalAmount = totalMilk * price;
+
+    doc.setFontSize(16);
+    doc.text("Milk Delivery Bill", 20, 20);
+
+    doc.setFontSize(12);
+    doc.text("Customer Name: " + name, 20, 40);
+    doc.text("Address: " + address, 20, 50);
+    doc.text("Billing Period: " + document.getElementById("startDate").value + " to " + document.getElementById("endDate").value, 20, 60);
+    doc.text("Total Days: " + totalDays, 20, 70);
+    doc.text("Days Missed: " + missedDays, 20, 80);
+    doc.text("Billable Days: " + billableDays, 20, 90);
+    doc.text("Milk per Day: " + quantity + " Litres", 20, 100);
+    doc.text("Price per Litre: Rs " + price, 20, 110);
+    doc.text("Total Milk: " + totalMilk + " Litres", 20, 120);
+    doc.text("Total Amount: Rs " + totalAmount, 20, 130);
+
+    doc.save("milk-bill.pdf");
+}
+</script>
+
+</body>
+</html>
